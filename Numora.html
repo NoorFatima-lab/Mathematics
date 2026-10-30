@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Numora | Beyond Numbers</title>
+<style>
+  :root{--bg:#080E18;--surface:#101A29;--surface2:#142235;--line:#243448;--text:#F1F5FC;--muted:#91A2B8;--cyan:#56F0D2}
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth;scroll-padding-top:100px}
+  body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,Arial,sans-serif;line-height:1.6;overflow-x:hidden}
+  a{color:inherit;text-decoration:none}
+  button,input,select,textarea{font:inherit}
+
+  .ambient{position:fixed;border-radius:50%;filter:blur(100px);opacity:.12;z-index:-1;pointer-events:none}
+  .a1{width:350px;height:350px;background:#087F8C;top:10%;right:5%;animation:drift 15s ease-in-out infinite alternate}
+  .a2{width:300px;height:300px;background:#5847BB;bottom:5%;left:10%;animation:drift 18s ease-in-out infinite alternate-reverse}
+
+  /* header */
+  header.top{position:sticky;top:0;z-index:20;background:#0B1320f2;backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+  .top-inner{max-width:1150px;margin:0 auto;padding:12px 20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}
+  .brand{font-weight:800;letter-spacing:2px;font-size:18px;display:inline-flex;align-items:center;gap:8px}
+  .brand-icon{width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,#56F0D2,#4C9CD9);display:grid;place-items:center;color:#07151E;font-size:22px;box-shadow:0 0 22px #56F0D233;animation:spin 14s linear infinite}
+  .brand span{color:var(--cyan)}
+  nav{display:flex;flex-wrap:wrap;gap:8px}
+  .nav-btn{padding:9px 16px;border:1px solid #2A4555;border-radius:10px;background:#0F1B2A;color:#C5D3E2;font-size:13px;font-weight:600;transition:transform .25s,color .25s,background .25s,border-color .25s,box-shadow .25s}
+  .nav-btn:hover{color:var(--cyan);background:#142D39;border-color:var(--cyan);transform:translateY(-2px);box-shadow:0 6px 16px #56F0D222}
+
+  main{max-width:1150px;margin:0 auto;padding:28px 20px 60px}
+
+  /* hero */
+  .hero{position:relative;overflow:hidden;border:1px solid #284454;border-radius:20px;background:linear-gradient(110deg,#101D2D 0%,#102837 60%,#10414B 100%);display:grid;grid-template-columns:1.1fr .9fr;align-items:center;min-height:360px;isolation:isolate}
+  .hero-copy{padding:40px 36px;position:relative;z-index:2}
+  .eyebrow{font:11px monospace;letter-spacing:2px;color:var(--cyan)}
+  .live{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--cyan);box-shadow:0 0 12px var(--cyan);margin-right:8px;animation:pulse 2s infinite}
+  .hero h1{font-size:clamp(32px,4.6vw,54px);letter-spacing:-1.5px;margin:14px 0;line-height:1.12}
+  .hero h1 span{color:var(--cyan);text-shadow:0 0 30px #56F0D233}
+  .hero p{color:#AFC0D0;max-width:440px;margin:0;font-size:15px}
+  .cta{display:inline-block;margin-top:24px;padding:12px 20px;border-radius:10px;background:var(--cyan);color:#07171E;font-weight:700;transition:transform .25s,box-shadow .25s}
+  .cta:hover{transform:translateY(-3px);box-shadow:0 0 22px #56F0D244}
+
+  .art{position:relative;height:340px;display:grid;place-items:center}
+  .art-grid{position:absolute;inset:0;background-image:linear-gradient(#8ECBD10D 1px,transparent 1px),linear-gradient(90deg,#8ECBD10D 1px,transparent 1px);background-size:30px 30px;-webkit-mask-image:radial-gradient(ellipse,#000 15%,transparent 72%);mask-image:radial-gradient(ellipse,#000 15%,transparent 72%)}
+  .orbit{position:absolute;left:50%;top:50%;border:1px solid #6BE8D54D;border-radius:50%;transform:translate(-50%,-50%) rotate(-25deg)}
+  .o1{width:250px;height:110px;animation:orbitSpin 13s linear infinite}
+  .o2{width:290px;height:160px;transform:translate(-50%,-50%) rotate(48deg);animation:orbitSpin 18s linear infinite reverse}
+  .o3{width:200px;height:200px;border-style:dashed;animation:spin 45s linear infinite}
+  .planet{width:110px;height:110px;border-radius:50%;background:radial-gradient(circle at 32% 27%,#BAFFF4 0,#42D6CE 10%,#147B91 38%,#132B54 72%,#0A1425 100%);box-shadow:inset -15px -15px 30px #030914,0 0 45px #36D6C533;animation:planetFloat 5s ease-in-out infinite;position:relative;z-index:2}
+  .sym{position:absolute;font-family:Georgia,serif;color:#75F8E4;text-shadow:0 0 18px #56F0D266;animation:float 4s ease-in-out infinite}
+  .s1{top:12%;left:18%;font-size:30px}
+  .s2{top:14%;right:14%;font-size:28px;animation-delay:-1s}
+  .s3{bottom:16%;left:14%;font-size:34px;animation-delay:-2s}
+  .s4{bottom:14%;right:16%;font-size:28px;animation-delay:-.8s}
+  .s5{top:44%;right:4%;font-size:30px;animation-delay:-1.5s}
+  .chip{position:absolute;font:11px monospace;padding:8px 11px;border:1px solid #3A6974;background:#0A1D2ACC;color:#B6FFF1;border-radius:8px;animation:float 5s ease-in-out infinite}
+  .c1{left:4%;top:30%}
+  .c2{right:2%;bottom:30%;animation-delay:-2s}
+
+  /* toolkit cards */
+  .toolkit-head{display:flex;justify-content:space-between;align-items:flex-end;gap:15px;flex-wrap:wrap;margin:44px 0 18px}
+  .toolkit-head h2{font-size:24px;margin:4px 0 0;letter-spacing:-.5px}
+  .toolkit-note{font-size:13px;color:var(--muted)}
+  .tool-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
+  .tool-card{position:relative;overflow:hidden;display:flex;flex-direction:column;border:1px solid var(--line);background:linear-gradient(145deg,#121E2E,#0E1724);padding:19px;border-radius:14px;transition:transform .3s,border-color .3s,box-shadow .3s;animation:rise .7s both}
+  .tool-card:nth-child(2){animation-delay:.08s}
+  .tool-card:nth-child(3){animation-delay:.16s}
+  .tool-card:nth-child(4){animation-delay:.24s}
+  .tool-card::before{content:"";position:absolute;width:130px;height:130px;border-radius:50%;right:-70px;top:-70px;background:var(--glow);filter:blur(35px);opacity:.14;transition:opacity .3s}
+  .tool-card:hover{transform:translateY(-7px);border-color:var(--accent);box-shadow:0 15px 35px #0003,0 0 22px var(--glow)}
+  .tool-card:hover::before{opacity:.42}
+  .card-cyan{--accent:#56F0D2;--glow:#56F0D2}
+  .card-violet{--accent:#B6A0FF;--glow:#9270FF}
+  .card-blue{--accent:#78B8FF;--glow:#579FFF}
+  .card-orange{--accent:#FFC17B;--glow:#FFAD65}
+  .tool-top{display:flex;justify-content:space-between;align-items:center}
+  .tool-icon{width:42px;height:42px;display:grid;place-items:center;border-radius:11px;background:color-mix(in srgb,var(--glow) 14%,transparent);border:1px solid color-mix(in srgb,var(--glow) 40%,transparent);font-size:24px;color:var(--accent);animation:iconFloat 4s ease-in-out infinite}
+  .card-arrow{color:#7188A1;transition:transform .25s,color .25s}
+  .tool-card:hover .card-arrow{transform:translate(4px,-4px);color:var(--accent)}
+  .tool-kicker{font:10px monospace;letter-spacing:1.5px;color:#6D8299;margin:21px 0 8px}
+  .tool-card h3{font-size:17px;margin:0 0 9px}
+  .tool-card .desc{font-size:13px;line-height:1.7;color:var(--muted);min-height:44px;margin:0}
+  .tool-link{display:flex;justify-content:space-between;align-items:center;margin-top:auto;padding-top:17px;font-size:13px;font-weight:700;color:var(--accent)}
+  .tool-link span{font-size:17px;transition:transform .25s}
+  .tool-card:hover .tool-link span{transform:translateX(6px)}
+
+  /* sections */
+  section{margin-top:44px;scroll-margin-top:100px}
+  section h2{font-size:24px;margin:4px 0 16px;letter-spacing:-.5px}
+  .card{background:linear-gradient(145deg,#121E2E,#0E1724);border:1px solid var(--line);border-radius:14px;padding:22px;transition:transform .3s,box-shadow .3s,border-color .3s}
+  .card:hover{transform:translateY(-4px);border-color:#2F4A62;box-shadow:0 14px 34px #0005}
+  label{display:block;font:11px monospace;letter-spacing:1px;color:#9CAEC2;margin:12px 0 6px}
+  input,select,textarea{width:100%;padding:12px;background:#09121E;border:1px solid #2A3A50;border-radius:8px;color:var(--text);margin-bottom:6px;outline:none;transition:border-color .2s,box-shadow .2s}
+  input:focus,select:focus,textarea:focus{border-color:var(--cyan);box-shadow:0 0 0 3px #56F0D211}
+
+  /* buttons */
+  button{font-weight:700;border:0;border-radius:9px;padding:12px 18px;background:var(--cyan);color:#07171E;cursor:pointer;margin-top:10px;transition:transform .25s,box-shadow .25s,background .25s}
+  button:hover{transform:translateY(-3px);box-shadow:0 0 22px #56F0D244;background:#8CFFE9}
+  button:active{transform:translateY(0)}
+  button.ghost{background:transparent;border:1px solid #3B5669;color:var(--text);margin-top:0}
+  button.ghost:hover{background:#142D39;border-color:var(--cyan);color:var(--cyan);box-shadow:none}
+  button.secondary{background:#142235;color:var(--text);border:1px solid #3B5669}
+  button.secondary:hover{border-color:var(--cyan);color:var(--cyan);background:#142D39;box-shadow:none}
+  button.del{background:#39232B;color:#FFAFB8;border:1px solid #65313B;padding:6px 12px;font-size:12px;margin-top:8px}
+  button.del:hover{background:#4A2A34;box-shadow:none}
+  .btn-row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+
+  .row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;align-items:end}
+  .out{margin-top:14px;padding:14px;background:#101F2D;border:1px solid #263D50;border-radius:9px;color:#C6F7EB;white-space:pre-wrap;min-height:48px;line-height:1.8;overflow-wrap:anywhere}
+  canvas{width:100%;height:auto;background:#F7FAFF;border-radius:8px;margin-top:14px;display:block}
+  .msg{color:#FFAFB8;font-size:13px;margin-top:8px;min-height:18px}
+  .answers{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:14px}
+  .answers button{background:var(--surface2);color:var(--text);border:1px solid #304258;margin:0;font-weight:600}
+  .answers button:hover{border-color:var(--cyan);color:var(--cyan);background:#163A40}
+  .answers button.correct{border-color:#56DCA6;background:#12372E;color:#DFFFF0}
+  .answers button.wrong{border-color:#FF8190;background:#3A202B;color:#FFD6DC}
+
+  .note{border:1px solid #2B3C50;border-radius:9px;padding:14px;background:#101F2D;margin-top:10px;white-space:pre-wrap;overflow-wrap:anywhere;transition:transform .25s,border-color .25s}
+  .note:hover{transform:translateX(4px);border-color:var(--cyan)}
+  .note strong{color:var(--cyan);display:block;margin-bottom:6px}
+  .empty{color:var(--muted);font-size:13px;margin-top:12px}
+
+  /* toast */
+  .toast{position:fixed;left:50%;bottom:28px;transform:translate(-50%,20px);background:#0F2A2A;border:1px solid var(--cyan);color:var(--cyan);padding:12px 20px;border-radius:10px;font-weight:600;opacity:0;pointer-events:none;transition:opacity .3s,transform .3s;z-index:50;box-shadow:0 10px 30px #0008}
+  .toast.show{opacity:1;transform:translate(-50%,0)}
+
+  footer{text-align:center;color:var(--muted);font-size:13px;border-top:1px solid var(--line);margin-top:55px;padding-top:20px}
+
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+  @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-13px)}}
+  @keyframes planetFloat{0%,100%{transform:translateY(0) rotate(-5deg)}50%{transform:translateY(-12px) rotate(5deg)}}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  @keyframes orbitSpin{from{transform:translate(-50%,-50%) rotate(0)}to{transform:translate(-50%,-50%) rotate(360deg)}}
+  @keyframes drift{from{transform:translate(0,0)}to{transform:translate(70px,-45px)}}
+  @keyframes rise{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+  @keyframes iconFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+
+  @media(max-width:1000px){
+    .tool-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  }
+  @media(max-width:820px){
+    .hero{grid-template-columns:1fr}
+    .hero-copy{padding:30px 24px 10px}
+    .art{height:280px}
+    .row{grid-template-columns:1fr}
+    .top-inner{justify-content:center;text-align:center}
+    nav{justify-content:center}
+  }
+  @media(max-width:520px){
+    .tool-grid{grid-template-columns:1fr}
+  }
+  @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+
+<div class="ambient a1"></div>
+<div class="ambient a2"></div>
+
+<header class="top">
+  <div class="top-inner">
+    <a class="brand" href="#home"><span class="brand-icon">∑</span> NUMORA<span>.</span></a>
+    <nav>
+      <a class="nav-btn" href="#solver">Solver</a>
+      <a class="nav-btn" href="#graph">Graph</a>
+      <a class="nav-btn" href="#convert">Converter</a>
+      <a class="nav-btn" href="#practice">Practice</a>
+      <a class="nav-btn" href="#notes">Notes</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <div class="hero" id="home">
+    <div class="hero-copy">
+      <div class="eyebrow"><span class="live"></span>THE ART OF MATHEMATICS</div>
+      <h1>Think deeper.<br>Discover <span>infinity.</span></h1>
+      <p>Solve equations, explore graphs, convert units and keep your notes in one place.</p>
+      <a class="cta" href="#graph">Explore graphs →</a>
+    </div>
+    <div class="art">
+      <div class="art-grid"></div>
+      <div class="orbit o1"></div>
+      <div class="orbit o2"></div>
+      <div class="orbit o3"></div>
+      <div class="planet"></div>
+      <div class="sym s1">π</div>
+      <div class="sym s2">∑</div>
+      <div class="sym s3">∫</div>
+      <div class="sym s4">Δ</div>
+      <div class="sym s5">∞</div>
+      <div class="chip c1">E = mc²</div>
+      <div class="chip c2">f(x) = x²</div>
+    </div>
+  </div>
+
+  <!-- TOOLKIT -->
+  <div class="toolkit-head">
+    <div>
+      <div class="eyebrow">YOUR TOOLKIT</div>
+      <h2>Explore your workspace</h2>
+    </div>
+    <p class="toolkit-note">Powerful tools. Clear thinking.</p>
+  </div>
+
+  <div class="tool-grid">
+    <a class="tool-card card-cyan" href="#solver">
+      <div class="tool-top">
+        <span class="tool-icon">∑</span>
+        <span class="card-arrow">↗</span>
+      </div>
+      <p class="tool-kicker">CALCULATE / 01</p>
+      <h3>Math Solver</h3>
+      <p class="desc">Solve quadratic equations with clear, step-by-step results.</p>
+      <span class="tool-link">Open solver <span>→</span></span>
+    </a>
+
+    <a class="tool-card card-violet" href="#graph">
+      <div class="tool-top">
+        <span class="tool-icon">⌁</span>
+        <span class="card-arrow">↗</span>
+      </div>
+      <p class="tool-kicker">VISUALIZE / 02</p>
+      <h3>Graph Studio</h3>
+      <p class="desc">Plot functions and explore the shape of curves.</p>
+      <span class="tool-link">Explore graphs <span>→</span></span>
+    </a>
+
+    <a class="tool-card card-blue" href="#practice">
+      <div class="tool-top">
+        <span class="tool-icon">✳</span>
+        <span class="card-arrow">↗</span>
+      </div>
+      <p class="tool-kicker">CHALLENGE / 03</p>
+      <h3>Practice Lab</h3>
+      <p class="desc">Test your understanding with interactive questions.</p>
+      <span class="tool-link">Start practice <span>→</span></span>
+    </a>
+
+    <a class="tool-card card-orange" href="#notes">
+      <div class="tool-top">
+        <span class="tool-icon">▤</span>
+        <span class="card-arrow">↗</span>
+      </div>
+      <p class="tool-kicker">ORGANIZE / 04</p>
+      <h3>Smart Notes</h3>
+      <p class="desc">Keep your formulas and revision notes together.</p>
+      <span class="tool-link">Open notes <span>→</span></span>
+    </a>
+  </div>
+
+  <!-- 1. QUADRATIC SOLVER -->
+  <section id="solver">
+    <div class="eyebrow">01 / CALCULATE</div>
+    <h2>Quadratic equation solver</h2>
+    <div class="card">
+      <label>ax² + bx + c = 0</label>
+      <div class="row">
+        <div><label>a</label><input id="qa" type="number" value="1"></div>
+        <div><label>b</label><input id="qb" type="number" value="-5"></div>
+        <div><label>c</label><input id="qc" type="number" value="6"></div>
+      </div>
+      <button id="solveBtn">Calculate answer →</button>
+      <div class="out" id="solverOut">Enter the coefficients and press calculate.</div>
+    </div>
+  </section>
+
+  <!-- 2. GRAPH STUDIO -->
+  <section id="graph">
+    <div class="eyebrow">02 / VISUALIZE</div>
+    <h2>Graph studio</h2>
+    <div class="card">
+      <label>Enter f(x) (e.g. x^2, 2x+1, sin(x), sqrt(x))</label>
+      <input id="fx" value="x^2">
+      <label>Range</label>
+      <select id="range">
+        <option value="5">-5 to 5</option>
+        <option value="10" selected>-10 to 10</option>
+        <option value="20">-20 to 20</option>
+      </select>
+      <button id="plotBtn">Plot function ↗</button>
+      <div class="msg" id="graphMsg"></div>
+      <canvas id="canvas" width="800" height="420"></canvas>
+    </div>
+  </section>
+
+  <!-- 3. UNIT CONVERTER -->
+  <section id="convert">
+    <div class="eyebrow">03 / CONVERT</div>
+    <h2>Unit converter</h2>
+    <div class="card">
+      <label>Category</label>
+      <select id="category"></select>
+      <div class="row">
+        <div>
+          <label>Value</label>
+          <input id="fromVal" type="number" value="1">
+          <label>From</label>
+          <select id="fromUnit"></select>
+        </div>
+        <button class="ghost" id="swapBtn" title="Swap units">⇄</button>
+        <div>
+          <label>Result</label>
+          <input id="toVal" readonly>
+          <label>To</label>
+          <select id="toUnit"></select>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. PRACTICE LAB -->
+  <section id="practice">
+    <div class="eyebrow">04 / CHALLENGE</div>
+    <h2>Practice lab</h2>
+    <div class="card">
+      <div class="eyebrow" id="qNum">QUESTION 01</div>
+      <h3 id="qText" style="margin:8px 0"></h3>
+      <div class="answers" id="answers"></div>
+      <div class="out" id="quizOut">Choose an answer.</div>
+      <button class="secondary" id="nextQ">Next question →</button>
+    </div>
+  </section>
+
+  <!-- 5. SMART NOTES -->
+  <section id="notes">
+    <div class="eyebrow">05 / ORGANIZE</div>
+    <h2>Smart notes</h2>
+    <div class="card">
+      <label>Title</label>
+      <input id="noteTitle" placeholder="e.g. Differentiation rules">
+      <label>Notes</label>
+      <textarea id="noteText" rows="4" placeholder="Write a formula, definition or reminder..."></textarea>
+      <div class="btn-row">
+        <button id="saveNote">Save note ↗</button>
+        <button class="secondary" id="downloadNotes">Download notes (.txt)</button>
+      </div>
+      <div id="notesList"></div>
+    </div>
+  </section>
+</main>
+
+<div class="toast" id="toast"></div>
+
+<footer>Learn with curiosity. Think without limits. · NUMORA · 2026</footer>
+
+<script>
+const $ = id => document.getElementById(id);
+
+function fmt(n) {
+  if (typeof n !== 'number' || Number.isNaN(n)) return 'Undefined';
+  if (!Number.isFinite(n)) return n > 0 ? '∞' : '-∞';
+  return Number.isInteger(n) ? String(n) : String(+n.toPrecision(10));
+}
+
+/* ---------- Toast ---------- */
+let toastTimer = null;
+function showToast(msg) {
+  const t = $('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+/* ---------- 1. Quadratic solver ---------- */
+$('solveBtn').addEventListener('click', () => {
+  const a = parseFloat($('qa').value);
+  const b = parseFloat($('qb').value);
+  const c = parseFloat($('qc').value);
+  const out = $('solverOut');
+
+  if ([a, b, c].some(Number.isNaN)) {
+    out.textContent = 'Please enter a number in all fields.';
+    return;
+  }
+
+  if (a === 0) {
+    out.textContent = b === 0
+      ? (c === 0 ? 'Infinite solutions (0 = 0)' : 'No solution')
+      : `This is a linear equation.\nx = ${fmt(-c / b)}`;
+    return;
+  }
+
+  const d = b * b - 4 * a * c;
+  let text;
+  if (d > 0) {
+    const r1 = (-b + Math.sqrt(d)) / (2 * a);
+    const r2 = (-b - Math.sqrt(d)) / (2 * a);
+    text = `Discriminant D = ${fmt(d)} (two distinct real roots)\nx₁ = ${fmt(r1)}\nx₂ = ${fmt(r2)}`;
+  } else if (d === 0) {
+    text = `Discriminant D = 0 (one repeated root)\nx = ${fmt(-b / (2 * a))}`;
+  } else {
+    const re = -b / (2 * a);
+    const im = Math.sqrt(-d) / (2 * Math.abs(a));
+    text = `Discriminant D = ${fmt(d)} (complex roots)\nx = ${fmt(re)} ± ${fmt(im)}i`;
+  }
+  out.textContent = text;
+});
+
+/* ---------- 2. Graph studio ---------- */
+const ALLOWED = new Set(['x','PI','E','sin','cos','tan','asin','acos','atan','sqrt','exp','log','abs']);
+
+function compile(raw) {
+  let s = raw.trim()
+    .replace(/\^/g, '**')
+    .replace(/\bpi\b/gi, 'PI')
+    .replace(/\be\b/g, 'E')
+    .replace(/\bln\b/gi, 'log');
+
+  s = s.replace(/(\d)([a-zA-Z(])/g, '$1*$2').replace(/\)(?=[\w(])/g, ')*');
+
+  for (const n of (s.match(/[A-Za-z_]\w*/g) || [])) {
+    if (!ALLOWED.has(n)) throw new Error(`"${n}" is not a recognised function or variable`);
+  }
+  return new Function('x', `with (Math) { return (${s}); }`);
+}
+
+function plot() {
+  let f;
+  try { f = compile($('fx').value); }
+  catch (e) { $('graphMsg').textContent = 'Error: ' + e.message; return; }
+
+  const R = +$('range').value;
+  const canvas = $('canvas');
+  const g = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  const sx = W / (2 * R), sy = H / (2 * R);
+  const toPx = x => (x + R) * sx;
+  const toPy = y => H - (y + R) * sy;
+  const pxToX = p => p / sx - R;
+
+  g.clearRect(0, 0, W, H);
+  g.fillStyle = '#F7FAFF';
+  g.fillRect(0, 0, W, H);
+
+  const step = R <= 10 ? 1 : 2;
+  g.font = '12px sans-serif';
+  for (let v = -R; v <= R; v += step) {
+    g.strokeStyle = v === 0 ? '#334155' : '#E2E8F0';
+    g.lineWidth = v === 0 ? 1.5 : 1;
+    g.beginPath(); g.moveTo(toPx(v), 0); g.lineTo(toPx(v), H); g.stroke();
+    g.beginPath(); g.moveTo(0, toPy(v)); g.lineTo(W, toPy(v)); g.stroke();
+    if (v !== 0) {
+      g.fillStyle = '#64748B';
+      g.fillText(v, toPx(v) + 3, toPy(0) - 4);
+      g.fillText(v, toPx(0) + 4, toPy(v) - 4);
+    }
+  }
+
+  g.strokeStyle = '#6366F1';
+  g.lineWidth = 2.5;
+  g.beginPath();
+  let pen = false, prev = null;
+  for (let p = 0; p <= W; p++) {
+    let y;
+    try { y = f(pxToX(p)); } catch { y = NaN; }
+    if (!Number.isFinite(y) || Math.abs(y) > 1e6) { pen = false; prev = null; continue; }
+    const py = toPy(y);
+    if (!pen || (prev !== null && Math.abs(y - prev) > 2 * R)) { g.moveTo(p, py); pen = true; }
+    else g.lineTo(p, py);
+    prev = y;
+  }
+  g.stroke();
+
+  $('graphMsg').textContent = `f(x) = ${$('fx').value}  (range -${R} to ${R})`;
+}
+
+$('plotBtn').addEventListener('click', plot);
+$('fx').addEventListener('keydown', e => { if (e.key === 'Enter') plot(); });
+
+/* ---------- 3. Unit converter ---------- */
+const UNITS = {
+  length: { mm: 0.001, cm: 0.01, m: 1, km: 1000, in: 0.0254, ft: 0.3048, yd: 0.9144, mi: 1609.344 },
+  mass: { mg: 0.000001, g: 0.001, kg: 1, tonne: 1000, oz: 0.0283495, lb: 0.453592 },
+  volume: { ml: 0.001, l: 1, 'm³': 1000, tsp: 0.00492892, tbsp: 0.0147868, cup: 0.236588, 'fl oz': 0.0295735, gal: 3.78541 },
+  time: { ms: 0.001, s: 1, min: 60, h: 3600, day: 86400, week: 604800 },
+  temperature: { '°C': 'C', '°F': 'F', 'K': 'K' }
+};
+const catSel = $('category'), fromSel = $('fromUnit'), toSel = $('toUnit');
+const fromVal = $('fromVal'), toVal = $('toVal');
+
+Object.keys(UNITS).forEach(c => {
+  const o = document.createElement('option');
+  o.value = c;
+  o.textContent = c[0].toUpperCase() + c.slice(1);
+  catSel.appendChild(o);
+});
+
+function toBase(v, u, c) {
+  if (c === 'temperature') {
+    if (u === '°C') return v;
+    if (u === '°F') return (v - 32) * 5 / 9;
+    return v - 273.15;
+  }
+  return v * UNITS[c][u];
+}
+function fromBase(v, u, c) {
+  if (c === 'temperature') {
+    if (u === '°C') return v;
+    if (u === '°F') return v * 9 / 5 + 32;
+    return v + 273.15;
+  }
+  return v / UNITS[c][u];
+}
+
+function fillUnits() {
+  const c = catSel.value;
+  const list = Object.keys(UNITS[c]);
+  fromSel.innerHTML = list.map(u => `<option>${u}</option>`).join('');
+  toSel.innerHTML = list.map(u => `<option>${u}</option>`).join('');
+  toSel.selectedIndex = Math.min(1, list.length - 1);
+  convert();
+}
+
+function convert() {
+  const v = parseFloat(fromVal.value);
+  if (Number.isNaN(v)) { toVal.value = ''; return; }
+  const c = catSel.value;
+  toVal.value = fmt(fromBase(toBase(v, fromSel.value, c), toSel.value, c));
+}
+
+catSel.addEventListener('change', fillUnits);
+fromVal.addEventListener('input', convert);
+fromSel.addEventListener('change', convert);
+toSel.addEventListener('change', convert);
+$('swapBtn').addEventListener('click', () => {
+  const t = fromSel.value;
+  fromSel.value = toSel.value;
+  toSel.value = t;
+  if (toVal.value) fromVal.value = toVal.value;
+  convert();
+});
+
+/* ---------- 4. Practice lab ---------- */
+const QUESTIONS = [
+  { q: 'What is the derivative of x²?', options: ['x', '2x', 'x³'], correct: 1 },
+  { q: 'What is the derivative of sin(x)?', options: ['cos(x)', '−cos(x)', 'tan(x)'], correct: 0 },
+  { q: 'What is ∫ 2x dx?', options: ['x² + C', '2 + C', 'x + C'], correct: 0 }
+];
+let qi = 0, answered = false;
+
+function showQ() {
+  const item = QUESTIONS[qi];
+  answered = false;
+  $('qNum').textContent = `QUESTION ${String(qi + 1).padStart(2, '0')}`;
+  $('qText').textContent = item.q;
+  $('quizOut').textContent = 'Choose an answer.';
+  const box = $('answers');
+  box.innerHTML = '';
+  item.options.forEach((opt, i) => {
+    const b = document.createElement('button');
+    b.textContent = opt;
+    b.addEventListener('click', () => {
+      if (answered) return;
+      answered = true;
+      if (i === item.correct) {
+        b.classList.add('correct');
+        $('quizOut').textContent = 'Correct!';
+      } else {
+        b.classList.add('wrong');
+        box.children[item.correct].classList.add('correct');
+        $('quizOut').textContent = 'Incorrect. The right answer is highlighted.';
+      }
+    });
+    box.appendChild(b);
+  });
+}
+$('nextQ').addEventListener('click', () => { qi = (qi + 1) % QUESTIONS.length; showQ(); });
+
+/* ---------- 5. Smart notes ---------- */
+let notes = [];
+try { notes = JSON.parse(localStorage.getItem('numora-notes')) || []; } catch (e) { notes = []; }
+
+function saveNotes() {
+  try { localStorage.setItem('numora-notes', JSON.stringify(notes)); } catch (e) {}
+}
+
+function renderNotes() {
+  const list = $('notesList');
+  list.innerHTML = '';
+  if (notes.length === 0) {
+    const p = document.createElement('p');
+    p.className = 'empty';
+    p.textContent = 'No notes yet. Write your first note above.';
+    list.appendChild(p);
+    return;
+  }
+  notes.forEach((n, i) => {
+    const div = document.createElement('div');
+    div.className = 'note';
+    const h = document.createElement('strong');
+    h.textContent = n.title;
+    const p = document.createElement('div');
+    p.textContent = n.text;
+    const del = document.createElement('button');
+    del.className = 'del';
+    del.textContent = 'Delete';
+    del.addEventListener('click', () => {
+      notes.splice(i, 1);
+      saveNotes();
+      renderNotes();
+      showToast('Note deleted');
+    });
+    div.append(h, p, del);
+    list.appendChild(div);
+  });
+}
+
+$('saveNote').addEventListener('click', () => {
+  const title = $('noteTitle').value.trim();
+  const text = $('noteText').value.trim();
+  if (!title || !text) { showToast('Please enter both a title and a note'); return; }
+  notes.unshift({ title, text });
+  saveNotes();
+  $('noteTitle').value = '';
+  $('noteText').value = '';
+  renderNotes();
+  showToast('Note saved ✓');
+});
+
+$('downloadNotes').addEventListener('click', () => {
+  if (notes.length === 0) { showToast('Save a note before downloading'); return; }
+  const content = notes
+    .map(n => `${n.title}\n${'-'.repeat(n.title.length)}\n${n.text}\n`)
+    .join('\n');
+  const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'numora-notes.txt';
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+  showToast('Notes file downloaded');
+});
+
+/* ---------- Start ---------- */
+fillUnits();
+plot();
+showQ();
+renderNotes();
+</script>
+</body>
+</html>
